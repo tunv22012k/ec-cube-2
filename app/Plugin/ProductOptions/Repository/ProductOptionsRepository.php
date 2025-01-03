@@ -5,8 +5,7 @@ namespace Plugin\ProductOptions\Repository;
 use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 use Eccube\Doctrine\Query\Queries;
 use Eccube\Repository\AbstractRepository;
-use Eccube\Repository\QueryKey;
-use Plugin\ProductOptions\Entity\Options;
+use Plugin\ProductOptions\Entity\ProductOptions;
 
 /**
  * ProductOptionsRepository.
@@ -34,7 +33,7 @@ class ProductOptionsRepository extends AbstractRepository
      */
     public function __construct(RegistryInterface $registry, Queries $queries)
     {
-        parent::__construct($registry, Options::class);
+        parent::__construct($registry, ProductOptions::class);
 
         $this->queries = $queries;
     }
