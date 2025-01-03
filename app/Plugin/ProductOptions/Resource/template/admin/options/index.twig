@@ -1,0 +1,267 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['product', 'options'] %}
+
+{% block title %}{{ 'admin.product.options_list'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.product.product_management'|trans }}{% endblock %}
+
+{% block main %}
+    <div class="c-outsideBlock">
+        <form id='search_form' method="post" action="{{ url('plugin_admin_options_list') }}">
+            {{ form_widget(searchForm._token) }}
+            <div class="c-outsideBlock__contents">
+                <div class="row justify-content-start">
+                    <div class="col-6">
+                        <div class="mb-2">
+                            <label
+                                class="col-form-label"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title=""
+                            >
+                                Search theo ID, Name
+                                <i class="fa fa-question-circle fa-lg ms-1"></i>
+                            </label>
+                            
+                            {# input search #}
+                            {{ form_widget(searchForm.id) }}
+                            {{ form_errors(searchForm.id) }}
+                        </div>
+                        <div class="mb-5">
+                            {# btn search #}
+                            <button class="btn btn-ec-conversion px-5" type="submit">search data</button>
+
+                            {# get count data search #}
+                            {% if pagination %}
+                                <span class="fw-bold ms-2">{{ 'admin.common.search_result'|trans({"%count%":pagination.totalItemCount})|raw }}</span>
+                            {% endif %}
+                        </div>
+                        {# return when search no record #}
+                        <div class="c-outsideBlock__contents mb-5">
+                            {{ include('@admin/search_items.twig', { 'form': searchForm }, ignore_missing = true) }}
+                        </div>
+
+                        {{ form_widget(searchForm.sortkey, {'attr': {'class': 'js-listSort-key'}}) }}
+                        {{ form_widget(searchForm.sorttype, {'attr': {'class': 'js-listSort-type'}}) }}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            {# btn create #}
+            <div class="d-block mb-3">
+                <a class="btn btn-ec-regular" href="{{ url('admin_options_new') }}">Create new</a>
+            </div>
+            <div class="c-primaryCol">
+                {# panigation #}
+                {% if pagination and pagination.totalItemCount %}
+                    <form id="form_bulk" method="POST" action="">
+                        <div class="row justify-content-between mb-2">
+                            <div class="col-6">
+                                {# TODO: check lại chỗ ni #}
+                                <div id="btn_bulk" class="d-none">
+                                    <label class="me-2">{{ 'admin.common.bulk_actions'|trans }}</label>
+                                    <div class="btn-group me-2" role="group">
+                                        <button {{ csrf_token_for_anchor() }} data-action="{{ url('admin_product_bulk_product_status', {id: constant('Eccube\\Entity\\Master\\ProductStatus::DISPLAY_SHOW')}) }}" class="btn btn-ec-regular action-submit" type="button">
+                                            <span>{{ 'admin.product.display_status__show'|trans }}</span>
+                                        </button>
+                                        <button {{ csrf_token_for_anchor() }} data-action="{{ url('admin_product_bulk_product_status', {id: constant('Eccube\\Entity\\Master\\ProductStatus::DISPLAY_HIDE')}) }}" class="btn btn-ec-regular action-submit" type="button">
+                                            <span>{{ 'admin.product.display_status__hide'|trans }}</span>
+                                        </button>
+                                    </div>
+                                    <button {{ csrf_token_for_anchor() }} data-action="{{ url('admin_product_bulk_product_status', {id: constant('Eccube\\Entity\\Master\\ProductStatus::DISPLAY_ABOLISHED')}) }}" class="btn btn-ec-regular me-2 action-submit">
+                                        {{ 'admin.product.display_status__abolished'|trans }}
+                                    </button>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#bulkDeleteModal" class="btn btn-ec-delete">{{ 'admin.product.permanently_delete'|trans }}</button>
+                                </div>
+                                {# TODO: check lại chỗ ni #}
+                            </div>
+                            <div class="col-5 text-end">
+                                <div class="d-inline-block me-2 align-bottom">
+                                    <div>
+                                        <select class="form-select" onchange="location = this.value;">
+                                            {% for pageMax in pageMaxis %}
+                                                <option {% if pageMax.name == page_count %}selected=""{% endif %} value="{{ path('plugin_admin_options_page', {'page_no': 1, 'page_count': pageMax.name}) }}">{{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-inline-block">
+                                    <div class="btn-group" role="group">
+                                        {# btn option table #}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card rounded border-0 mb-4 d-block">
+                            <div class="card-body p-0">
+                                {# table #}
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0 pt-2 pb-2" nowrap>
+                                                Id
+                                                <a href="#" class="js-listSort" data-sortkey="id">
+                                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                                                </a>
+                                            </th>
+                                            <th class="border-top-0 pt-2 pb-2">
+                                                Name
+                                                <a href="#" class="js-listSort" data-sortkey="name">
+                                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                                                </a>
+                                            </th>
+                                            <th class="border-top-0 pt-2 pb-2">
+                                                Fee
+                                                <a href="#" class="js-listSort" data-sortkey="fee">
+                                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                                                </a>
+                                            </th>
+                                            <th class="border-top-0 pt-2 pb-2">
+                                                Use Flag
+                                            </th>
+                                            <th class="border-top-0 pt-2 pb-2">
+                                                Create date
+                                                <a href="#" class="js-listSort" data-sortkey="create_date">
+                                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                                                </a>
+                                            </th>
+                                            <th class="border-top-0 pt-2 pb-2 pe-2" colspan="2"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for Options in pagination %}
+                                            <tr id="ex-options-{{ Options.id }}">
+                                                <td class="align-middle">
+                                                    {{ Options.id }}
+                                                </td>
+                                                <td class="align-middle">
+                                                    {{ Options.name }}
+                                                </td>
+                                                <td class="align-middle">
+                                                    {{ Options.fee|price }}
+                                                </td>
+                                                <td class="align-middle">
+                                                    {# btn update flg #}
+                                                    <a
+                                                        class="btn btn-ec-actionIcon me-2 action-visible"
+                                                        href="{{ url('admin_options_visibility', {'id': Options.id }) }}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="{{ Options.use_flg ? 'admin.common.to_hide'|trans : 'admin.common.to_show'|trans }}"
+                                                        data-confirm="false"
+                                                        data-method="put"
+                                                        {{ csrf_token_for_anchor() }}
+                                                    >
+                                                        <i
+                                                            class="fa fa-toggle-{{ Options.use_flg ? 'on' : 'off' }} fa-lg text-secondary"
+                                                            aria-hidden="true"
+                                                        ></i>
+                                                    </a>
+                                                </td>
+                                                <td class="align-middle">
+                                                    {{ Options.create_date|date_min }}
+                                                </td>
+                                                <td class="align-middle pe-2" colspan="2">
+                                                    <div class="text-end">
+                                                        <a
+                                                            class="btn btn-ec-actionIcon me-2 action-edit"
+                                                            href="{{ url('admin_options_edit', {'id': Options.id }) }}"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            title="{{ 'admin.common.edit'|trans }}"
+                                                        >
+                                                            <i class="fa fa-pencil fa-lg text-secondary"></i>
+                                                        </a>
+                                                        {# btn delete show modal #}
+                                                        <a
+                                                            class="btn"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#DeleteModal"
+                                                            data-url="{{ url('admin_options_delete', {id: Options.id} ) }}"
+                                                            data-message="Bạn có chắc chắn muốn xóa tên option: {{ Options.name }}"
+                                                        >
+                                                            <i class="fa fa-close fa-lg"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if pagination.totalItemCount > 0 %}
+                                <div class="row justify-content-md-center mb-4 pb-4">
+                                    {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'plugin_admin_options_page' } %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </form>
+                    <!-- modal delete -->
+                    <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    {# title #}
+                                    <h5 class="modal-title fw-bold">
+                                        Delete
+                                    </h5>
+                                    {# btn close #}
+                                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                {# content message modal #}
+                                <div class="modal-body text-start">
+                                    <p class="text-start modal-message"><!-- jsでメッセージを挿入 --></p>
+                                </div>
+                                {# btn cancel and ok #}
+                                <div class="modal-footer">
+                                    <button class="btn btn-ec-sub" type="button" data-bs-dismiss="modal">
+                                        {{ 'admin.common.cancel'|trans }}
+                                    </button>
+                                    <a class="btn btn-ec-delete btnModalDelete" href="#" {{ csrf_token_for_anchor() }} data-method="delete" data-confirm="false">
+                                        {{ 'admin.common.delete'|trans }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% elseif has_errors %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_invalid_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_advanced_search'|trans }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $(function() {
+            $(function() {
+                // btn delete table click
+                $('#DeleteModal').on('shown.bs.modal', function(event) {
+                    var target = $(event.relatedTarget);
+                    // hrefの変更
+                    $(".btnModalDelete").attr('href', target.data('url'));
+
+                    // messageの変更
+                    $(this).find('p.modal-message').text(target.data('message'));
+                });
+            });
+        });
+    </script>
+{% endblock %}

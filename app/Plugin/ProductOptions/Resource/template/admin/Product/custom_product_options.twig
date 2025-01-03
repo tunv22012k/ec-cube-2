@@ -1,0 +1,75 @@
+<script>
+$(function() {
+    $('#plugin_product_option').appendTo('.c-contentsArea__primaryCol');
+    $('#plugin_product_option').removeClass('d-none');
+});
+</script>
+
+<div id="plugin_product_option" class="d-none">
+    <div class="card rounded border-0 mb-4">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-8">
+                    <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Data list options">
+                        <span class="card-title">List option</span>
+                        <i class="fa fa-question-circle fa-lg ms-1"></i>
+                    </div>
+                </div>
+                <div class="col-4 text-end">
+                    <a data-bs-toggle="collapse" href="#listOptions" aria-expanded="false"
+                        aria-controls="listOptions">
+                        <i class="fa fa-angle-up fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="collapse show ec-cardCollapse" id="listOptions">
+            <div class="card-body">
+                {% macro tree(ChoicedIds, Options, form) %}
+                    {% import _self as selfMacro %}
+                    <li class="c-directoryTree--registerItem options-li">
+                        <input
+                            type="checkbox"
+                            id="admin_product_options_{{ Options.id }}"
+                            name="admin_product[Options][]"
+                            value="{{ Options.id }}"
+                            {% if Options.id in ChoicedIds %}checked{% endif %}
+                        >
+                        <label for="admin_product_options_{{ Options.id }}">{{ Options.name }}</label>
+                        
+                        {# list child #}
+                        {# <ul class="list-unstyled">
+                            {% for child, ChildOptions in Options.children %}
+                                {{ selfMacro.tree(ChoicedIds, ChildOptions, form) }}
+                            {% endfor %}
+                        </ul> #}
+                    </li>
+                {% endmacro %}
+
+                <div class="c-directoryTree--register rounded border mb-3 p-3">
+                    {% import _self as renderMacro %}
+                    {% for options in listOptions %}
+                        <ul class="list-unstyled">
+                            {{ renderMacro.tree(choicedOptionsIds, options, form.Options) }}
+                        </ul>
+                    {% endfor %}
+                    {{ form_errors(form.Options) }}
+                </div>
+
+                <div class="d-block text-center mt-3">
+                    <a
+                        href="{{ path('plugin_admin_options_list') }}"
+                        class="btn w-100 btn-ec-regular"
+                        title="move list options"
+                        target="_blank"
+                        {# data-action="confirm" #}
+                    >
+                        list options
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
