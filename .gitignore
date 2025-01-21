@@ -1,2 +1,3 @@
-# vendor/
-# node_modules/
+var/
+vendor/
+node_modules/
