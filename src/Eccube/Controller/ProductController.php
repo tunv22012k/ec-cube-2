@@ -311,6 +311,7 @@ class ProductController extends AbstractController
      */
     public function addCart(Request $request, Product $Product)
     {
+        // dd($Product);
         // エラーメッセージの配列
         $errorMessages = [];
         if (!$this->checkVisibility($Product)) {
@@ -336,11 +337,19 @@ class ProductController extends AbstractController
         );
         $this->eventDispatcher->dispatch($event, EccubeEvents::FRONT_PRODUCT_CART_ADD_INITIALIZE);
 
+        // dd($request);
+
         /* @var $form \Symfony\Component\Form\FormInterface */
         $form = $builder->getForm();
         $form->handleRequest($request);
 
+        // dd($form->getData());
+
         if (!$form->isValid()) {
+            $errors = [];
+            foreach ($form->getErrors() as $error) { $errors[] = $error->getMessage(); }
+            dd($errors);
+
             throw new NotFoundHttpException();
         }
 
@@ -358,6 +367,8 @@ class ProductController extends AbstractController
         // カートへ追加
         $this->cartService->addProduct($addCartData['product_class_id'], $addCartData['quantity']);
 
+        // dd("Controller => " . $request);
+
         // 明細の正規化
         $Carts = $this->cartService->getCarts();
         foreach ($Carts as $Cart) {
@@ -374,6 +385,8 @@ class ProductController extends AbstractController
             }
         }
 
+        // dd($Carts);
+
         $this->cartService->save();
 
         log_info(
@@ -385,6 +398,8 @@ class ProductController extends AbstractController
             ]
         );
 
+        // dd($form->getData(), $Product, $request);
+
         $event = new EventArgs(
             [
                 'form' => $form,
@@ -393,6 +408,8 @@ class ProductController extends AbstractController
             $request
         );
         $this->eventDispatcher->dispatch($event, EccubeEvents::FRONT_PRODUCT_CART_ADD_COMPLETE);
+
+        // dd(4444444);
 
         if ($event->getResponse() !== null) {
             return $event->getResponse();

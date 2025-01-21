@@ -356,6 +356,9 @@ class CartService
         $newItem->setProductClass($ProductClass);
 
         $allCartItems = $this->mergeAllCartItems([$newItem]);
+
+        // dd($allCartItems);
+
         $this->restoreCarts($allCartItems);
 
         return true;
@@ -396,6 +399,7 @@ class CartService
     {
         $cartKeys = [];
         foreach ($this->carts as $Cart) {
+            // dd($Cart);
             $Cart->setCustomer($this->getUser());
             $this->entityManager->persist($Cart);
             foreach ($Cart->getCartItems() as $item) {

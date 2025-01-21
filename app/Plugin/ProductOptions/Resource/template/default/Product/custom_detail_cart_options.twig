@@ -1,0 +1,21 @@
+<script>
+    $(function() {
+        $('#plugin_detail_cart_option').appendTo('.ec-productRole__actions');
+        $('#plugin_detail_cart_option').removeClass('d-none');
+    });
+</script>
+
+<div id="plugin_detail_cart_option" class="d-none">
+    {% for Option in Options %}
+        <div class="list_options">
+            {{ Option.name }} - Số lượng: 
+            <input
+                type="number" 
+                value="0"
+                id="detail_product_options_{{ Option.id }}"
+                name="Options[{{ Option.id }}]"
+            >
+        </div>
+    {% endfor %}
+</div>
+

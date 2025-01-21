@@ -42,6 +42,7 @@ services:
                 - '@Eccube\Service\PurchaseFlow\Processor\PaymentValidator' # 使用できない支払い方法が含まれていないかどうか
                 - '@Eccube\Service\PurchaseFlow\Processor\PaymentTotalLimitValidator' # 支払金額の上限チェック
                 - '@Eccube\Service\PurchaseFlow\Processor\PaymentTotalNegativeValidator'  # 支払金額のマイナスチェック
+                - '@Plugin\ProductOptions\Service\PurchaseFlow\Processor\OptionsProcessor'
 
     # Purchase Flow for Shopping
     eccube.purchase.flow.shopping:

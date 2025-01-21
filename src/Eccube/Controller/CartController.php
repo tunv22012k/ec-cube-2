@@ -134,12 +134,24 @@ class CartController extends AbstractController
      */
     protected function execPurchaseFlow($Carts)
     {
+        // dd($Carts);
+        // $cartOptions = $Carts[0]->getCartOptions();
+        // // dd($cartOptions);
+        // $aa = [];
+        // foreach ($cartOptions as $key => $value) {
+        //     $aa[] = $value;
+        // }
+
+        // dd($aa);
+
         /** @var PurchaseFlowResult[] $flowResults */
         $flowResults = array_map(function ($Cart) {
             $purchaseContext = new PurchaseContext($Cart, $this->getUser());
 
             return $this->purchaseFlow->validate($Cart, $purchaseContext);
         }, $Carts);
+
+        // dd($Carts);
 
         // 復旧不可のエラーが発生した場合はカートをクリアして再描画
         $hasError = false;

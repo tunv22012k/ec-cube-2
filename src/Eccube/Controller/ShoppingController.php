@@ -180,6 +180,8 @@ class ShoppingController extends AbstractShoppingController
             $this->entityManager->flush();
         }
 
+        // dd($Order);
+
         $activeTradeLaws = $this->tradeLawRepository->findBy(['displayOrderScreen' => true], ['sortNo' => 'ASC']);
 
         $form = $this->createForm(OrderType::class, $Order);

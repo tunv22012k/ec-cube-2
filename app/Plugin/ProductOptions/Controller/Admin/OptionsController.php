@@ -67,6 +67,10 @@ class OptionsController extends AbstractController
         // get form to form type
         $searchForm = $builder->getForm();
 
+        // $this->session->remove('eccube.admin.options.search.page_count');
+        // $this->session->remove('eccube.admin.options.search');
+        // $this->session->remove('eccube.admin.options.search.page_no');
+
         /**
          * SET DATA PANIGATE
          * ページの表示件数は, 以下の順に優先される.
@@ -159,27 +163,34 @@ class OptionsController extends AbstractController
         $sortKey = $searchData['sortkey'];
 
         // get data sort
-        if (
-            empty($this->optionsRepository::COLUMNS[$sortKey])
-            || $sortKey == 'id'
-            || $sortKey == 'fee'
-            || $sortKey == 'code'
-            || $sortKey == 'create_date'
-        ) {
-            $pagination = $paginator->paginate(
-                $qb,
-                $page_no,
-                $page_count
-            );
-        } else { // get show data no sort
-            // call data and paginator
-            $pagination = $paginator->paginate(
-                $qb,
-                $page_no,
-                $page_count,
-                ['wrap-queries' => true]
-            );
-        }
+        // if (
+        //     empty($this->optionsRepository::COLUMNS[$sortKey])
+        //     || $sortKey == 'id'
+        //     || $sortKey == 'fee'
+        //     || $sortKey == 'code'
+        //     || $sortKey == 'create_date'
+        // ) {
+        //     $pagination = $paginator->paginate(
+        //         $qb,
+        //         $page_no,
+        //         $page_count
+        //     );
+        // } else { // get show data no sort
+        //     // call data and paginator
+        //     $pagination = $paginator->paginate(
+        //         $qb,
+        //         $page_no,
+        //         $page_count,
+        //         ['wrap-queries' => true]
+        //     );
+        // }
+
+        $pagination = $paginator->paginate(
+            $qb,
+            $page_no,
+            $page_count,
+            ['wrap-queries' => true]
+        );
 
         // return data
         return [

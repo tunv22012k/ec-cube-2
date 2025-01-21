@@ -1,0 +1,47 @@
+<script>
+    $(function() {
+        $('#plugin_list_cart_option').appendTo('.ec-cartRole__cart');
+        $('#plugin_list_cart_option').removeClass('d-none');
+    });
+</script>
+
+<style>
+    .ec-cartRow {
+        text-align: center;
+    }
+</style>
+
+<div id="plugin_list_cart_option" class="d-none">
+    <h3>Danh sách option:</h3>
+    <div class="ec-cartTable">
+        <ol class="ec-cartHeader">
+            <li class="ec-cartHeader__label">{{ 'Tên sản phẩm'|trans }}</li>
+            <li class="ec-cartHeader__label">{{ 'Tên options'|trans }}</li>
+            <li class="ec-cartHeader__label">{{ 'Số lượng'|trans }}</li>
+            <li class="ec-cartHeader__label">{{ 'Giá'|trans }}</li>
+        </ol>
+        {% for CartIndex,Cart in Carts %}
+                {% set listCartOptions = Cart.CartOptions %}
+                {% for dataCartOption in listCartOptions %}
+                    {% set ProductClass = dataCartOption.ProductClass %}
+                    {% set Product = ProductClass.Product %}
+                    {% set Options = dataCartOption.Options %}
+                    <ul class="ec-cartRow">
+                        <li class="ec-cartRow__contentColumn">
+                            {{ Product.name }}
+                        </li>
+                        <li class="ec-cartRow__contentColumn">
+                            {{ Options.name }}
+                        </li>
+                        <li class="ec-cartRow__amountColumn">
+                            {{ dataCartOption.quantity }}
+                        </li>
+                        <li class="ec-cartRow__subtotalColumn">
+                            {{ (dataCartOption.price * dataCartOption.quantity)|price }}
+                        </li>
+                    </ul>
+                {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+

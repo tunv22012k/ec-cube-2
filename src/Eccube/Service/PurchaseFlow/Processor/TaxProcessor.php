@@ -20,10 +20,10 @@ use Eccube\Entity\Master\TaxDisplayType;
 use Eccube\Entity\Master\TaxType;
 use Eccube\Entity\Order;
 use Eccube\Repository\TaxRuleRepository;
+use Eccube\Service\OrderHelper;
 use Eccube\Service\PurchaseFlow\ItemHolderPreprocessor;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\TaxRuleService;
-use Eccube\Service\OrderHelper;
 
 class TaxProcessor implements ItemHolderPreprocessor
 {

@@ -77,7 +77,7 @@ class OptionsRepository extends AbstractRepository
             $qb->addOrderBy('d.id', 'DESC');
         }
 
-        return $this->queries->customize(QueryKey::CUSTOMER_SEARCH, $qb, $searchData);
+        return $qb;
     }
 
     /**

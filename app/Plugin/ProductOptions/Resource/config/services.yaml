@@ -1,0 +1,58 @@
+services:
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, event subscribers, etc.
+        autoconfigure: true
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: false
+
+    Eccube\Service\CartService:
+        class: Plugin\ProductOptions\Service\CustomCartService
+        arguments:
+            $session: '@session'
+            $entityManager: '@doctrine.orm.entity_manager'
+            $productClassRepository: '@Eccube\Repository\ProductClassRepository'
+            $cartRepository: '@Eccube\Repository\CartRepository'
+            $cartItemComparator: '@Eccube\Service\Cart\CartItemComparator'
+            $cartItemAllocator: '@Eccube\Service\Cart\CartItemAllocator'
+            $orderRepository: '@Eccube\Repository\OrderRepository'
+            $tokenStorage: '@security.token_storage'
+            $authorizationChecker: '@security.authorization_checker'
+
+    Eccube\Service\PurchaseFlow\Processor\DeliveryFeePreprocessor:
+        class: Plugin\ProductOptions\Service\PurchaseFlow\Processor\CustomDeliveryFeePreprocessor
+
+    Plugin\ProductOptions\Service\Cart\ProductClassAndOptionComparator:
+        class: Plugin\ProductOptions\Service\Cart\ProductClassAndOptionComparator
+
+    Eccube\Service\Cart\CartItemComparator:
+        alias: Plugin\ProductOptions\Service\Cart\ProductClassAndOptionComparator
+
+    # custom file purchase flow
+    customize_purchase_flow:
+        class: Plugin\ProductOptions\Service\PurchaseFlow\CustomPurchaseFlow
+        public: true
+        calls:
+            - [setFlowType, ['cart']]
+            - [setItemValidators, ['@eccube.purchase.flow.cart.item_validators']]
+            - [setItemHolderValidators, ['@eccube.purchase.flow.cart.holder_validators']]
+            - [setItemPreprocessors, ['@eccube.purchase.flow.cart.item_preprocessors']]
+            - [setItemHolderPreprocessors, ['@eccube.purchase.flow.cart.holder_preprocessors']]
+            - [setItemHolderPostValidators, ['@eccube.purchase.flow.cart.holder_post_validators']]
+    
+    # # Trường hợp không sử dụng file custom
+    # Eccube\Controller\CartController:
+    #     class: Eccube\Controller\CartController
+    #     public: true
+    #     tags: ['controller.service_arguments']
+    #     arguments:
+    #         $cartPurchaseFlow: '@customize_purchase_flow'
+
+    # Trường hợp có sử dụng file custom
+    Plugin\ProductOptions\Controller\CustomCartController:
+        public: true
+        tags: ['controller.service_arguments']
+        arguments:
+            $CartPurchaseFlow: '@customize_purchase_flow'

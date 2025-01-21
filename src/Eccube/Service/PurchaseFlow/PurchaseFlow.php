@@ -129,12 +129,16 @@ class PurchaseFlow
 
         $this->calculateAll($itemHolder);
 
+        // dd($itemHolder);
+
         foreach ($this->itemHolderValidators as $itemHolderValidator) {
             $result = $itemHolderValidator->execute($itemHolder, $context);
             $flowResult->addProcessResult($result);
         }
 
         $this->calculateAll($itemHolder);
+
+        // dd($itemHolder);
 
         foreach ($itemHolder->getItems() as $item) {
             foreach ($this->itemPreprocessors as $itemPreprocessor) {
@@ -143,6 +147,8 @@ class PurchaseFlow
         }
 
         $this->calculateAll($itemHolder);
+
+        // dd($itemHolder);
 
         foreach ($this->itemHolderPreprocessors as $holderPreprocessor) {
             $result = $holderPreprocessor->process($itemHolder, $context);
@@ -153,11 +159,15 @@ class PurchaseFlow
             $this->calculateAll($itemHolder);
         }
 
+        // dd($itemHolder);
+
         foreach ($this->discountProcessors as $discountProcessor) {
             $discountProcessor->removeDiscountItem($itemHolder, $context);
         }
 
         $this->calculateAll($itemHolder);
+
+        // dd($itemHolder);
 
         foreach ($this->discountProcessors as $discountProcessor) {
             $result = $discountProcessor->addDiscountItem($itemHolder, $context);
@@ -167,12 +177,17 @@ class PurchaseFlow
             $this->calculateAll($itemHolder);
         }
 
+        // dd($itemHolder);
+
         foreach ($this->itemHolderPostValidators as $itemHolderPostValidator) {
             $result = $itemHolderPostValidator->execute($itemHolder, $context);
             $flowResult->addProcessResult($result);
 
             $this->calculateAll($itemHolder);
         }
+
+        // dd(get_class($itemHolder));
+        // dd($flowResult);
 
         return $flowResult;
     }

@@ -1,0 +1,96 @@
+<script>
+    $(function() {
+        $('#plugin_list_cart_option').appendTo('.ec-totalBox__total');
+        $('#plugin_list_cart_option').removeClass('d-none');
+
+        $('#plugin_list_cart_option_2').appendTo('.ec-orderDelivery__item');
+        $('#plugin_list_cart_option_2').removeClass('d-none');
+    });
+</script>
+
+<style>
+    .form_options_pay {
+        border-top: 1px dotted #ccc;
+        padding: 8px 0 8px 0;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .total_price_options {
+        text-align: right;
+    }
+    .tt_options {
+        text-align: left;
+    }
+    .prc_opt {
+        font-size: 16px;
+        line-height: 1.4;
+        color: #525263;
+        -webkit-text-size-adjust: 100%;
+        font-weight: 400;
+    }
+    .ec-cartRow {
+        text-align: center;
+    }
+    .ec-cartTable {
+        margin-bottom: 20px;
+    }
+</style>
+
+{% set OrderOptions = (Order.OrderOptions|length > 0 ? Order.OrderOptions : (Order.OrderOptionsSetNew|length > 0 ? Order.OrderOptionsSetNew : [])) %}
+
+<div id="plugin_list_cart_option" class="d-none">
+    <div class="form_options_pay">
+        <div class="tt_options">
+            <b>Options:</b>
+        </div>
+        {% set totalPriceOption = 0 %}
+        {% for dataCartOption in OrderOptions %}
+            {% set ProductClass = dataCartOption.ProductClass %}
+            {% set Product = ProductClass.Product %}
+            {% set Options = dataCartOption.Options %}
+            {% set priceOption = dataCartOption.price * dataCartOption.quantity %}
+            {% set totalPriceOption = totalPriceOption + priceOption %}
+            <dl class="ec-totalBox__spec">
+                {# <dt>{{ Options.name }} - {{ Product.name }}</dt> #}
+                <dt>{{ Options.name }}</dt>
+                <dd class="prc_opt">{{ priceOption|price }}</dd>
+            </dl>
+        {% endfor %}
+        <div class="total_price_options">
+            {# <span class="ec-totalBox__price">{{ Order.taxable_total|price }}</span> #}
+            <span class="ec-totalBox__price">{{ totalPriceOption|price }}</span>
+            <span class="ec-totalBox__taxLabel">{{ '税込'|trans }}</span>
+        </div>
+    </div>
+</div>
+
+<div id="plugin_list_cart_option_2" class="d-none">
+    <h3>Danh sách option:</h3>
+    <div class="ec-cartTable">
+        <ol class="ec-cartHeader">
+            <li class="ec-cartHeader__label">{{ 'Tên sản phẩm'|trans }}</li>
+            <li class="ec-cartHeader__label">{{ 'Tên options'|trans }}</li>
+            <li class="ec-cartHeader__label">{{ 'Số lượng'|trans }}</li>
+            <li class="ec-cartHeader__label">{{ 'Giá'|trans }}</li>
+        </ol>
+        {% for dataCartOption in OrderOptions %}
+            {% set ProductClass = dataCartOption.ProductClass %}
+            {% set Product = ProductClass.Product %}
+            {% set Options = dataCartOption.Options %}
+            <ul class="ec-cartRow">
+                <li class="ec-cartRow__contentColumn">
+                    {{ Product.name }}
+                </li>
+                <li class="ec-cartRow__contentColumn">
+                    {{ Options.name }}
+                </li>
+                <li class="ec-cartRow__amountColumn">
+                    {{ dataCartOption.quantity }}
+                </li>
+                <li class="ec-cartRow__subtotalColumn">
+                    {{ (dataCartOption.price * dataCartOption.quantity)|price }}
+                </li>
+            </ul>
+        {% endfor %}
+    </div>
+</div>
